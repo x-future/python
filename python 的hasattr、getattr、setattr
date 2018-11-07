@@ -1,0 +1,31 @@
+python中hasattr()、getattr()、setattr()函数的使用
+
+　　1. hasattr(object, name)
+
+　　判断object对象中是否存在name属性，当然对于python的对象而言，属性包含变量和方法；有则返回True，没有则返回False；需要注意的是name参数是string类型，所以不管是要判断变量还是方法，其名称都以字符串形式传参；getattr和setattr也同样；
+    2. getattr(object, name[, default])
+
+　　获取object对象的属性的值，如果存在则返回属性值，如果不存在分为两种情况，一种是没有default参数时，会直接报错；给定了default参数，若对象本身没有name属性，则会返回给定的default值；如果给定的属性name是对象的方法，则返回的是函数对象，需要调用函数对象来获得函数的返回值；调用的话就是函数对象后面加括号，如func之于func();
+    3. setattr(object, name, value)
+
+　　给object对象的name属性赋值value，如果对象原本存在给定的属性name，则setattr会更改属性的值为给定的value；如果对象原本不存在属性name，setattr会在对象中创建属性，并赋值为给定的value；
+
+举例：
+In [1]: class A():
+   ...:     name = 'python'
+   ...:     def func(self):
+   ...:         return "A()类的方法func()"
+   ...:
+In [3]: hasattr(A, 'name')
+Out[3]: True
+
+In [4]: hasattr(A, 'age')
+Out[4]: False
+
+In [5]: getattr(A, 'name')
+Out[5]: 'python'
+
+In [6]: setattr(A , 'age', '28')
+
+In [7]: hasattr(A, 'age')
+Out[7]: True
