@@ -1,0 +1,96 @@
+python迭代器生成器装饰器
+1、迭代器(iterator)
+那么什么迭代器呢？它是一个带状态的对象，他能在你调用next()方法的时候返回容器中的下一个值，任何实现了__iter__和__next__()方法的对象都是迭代器，__iter__返回迭代器自身，__next__返回容器中的下一个值，如果容器中没有更多元素了，则抛出StopIteration异常，至于它们到底是如何实现的这并不重要。
+
+迭代器是访问集合元素的一种方式。迭代器对象从集合的第一个元素开始访问，直到所有的元素被访问完结束。迭代器只能往前不会后退，不过这也没什么，因为人们很少在迭代途中往后退。另外，迭代器的一大优点是不要求事先准备好整个迭代过程中所有的元素。迭代器仅仅在迭代到某个元素时才计算该元素，而在这之前或之后，元素可以不存在或者被销毁。这个特点使得它特别适合用于遍历一些巨大的或是无限的集合，比如几个G的文件。
+
+特点：
+
+a）访问者不需要关心迭代器内部的结构，仅需通过next()方法或不断去取下一个内容
+
+b）不能随机访问集合中的某个值 ，只能从头到尾依次访问
+
+c）访问到一半时不能往回退
+
+d）便于循环比较大的数据集合，节省内存
+
+e）也不能复制一个迭代器。如果要再次（或者同时）迭代同一个对象，只能去创建另一个迭代器对象。
+
+迭代器举例
+
+city = ['beijing','shanghai','tinajin','chongqin']
+it = iter(city)
+print(type(it))
+#方法一：使用next方法来使用迭代器
+print(it.__next__())
+print(it.__next__())
+
+方法二：使用for循环来使用迭代器
+for x in it:
+    print(x)
+
+可以直接作用于for循环的对象统称为可迭代对象(Iterable)。
+
+可以被next()函数调用并不断返回下一个值的对象称为迭代器(Iterator)。
+
+所有的Iterable均可以通过内置函数iter()来转变为Iterator。
+
+1）可迭代对象
+
+首先，迭代器是一个对象，不是一个函数；是一个什么样的对象呢？就是只要它定义了可以返回一个迭代器的__iter__方法，或者定义了可以支持下标索引的__getitem__方法，那么它就是一个可迭代对象。
+
+python中大部分对象都是可迭代的，比如list，tuple等。如果给一个准确的定义的话，看一下list，tuple类的源码，都有__iter__(self)方法。
+
+常见的可迭代对象：
+
+a) 集合数据类型，如list、tuple、dict、set、str等；
+
+b) generator，包括生成器和带yield的generator function。
+任何实现了__iter__和__next__()（python2中实现next()）方法的对象都是迭代器，__iter__返回迭代器自身，__next__返回容器中的下一个值
+
+如何判断一个对象是可迭代对象呢？可以通过collections模块的Iterable类型判断：
+
+>>> from collections import Iterable
+>>> isinstance([], Iterable)
+True
+>>> isinstance({}, Iterable)
+True
+>>> isinstance('abc', Iterable)
+True
+>>> isinstance((x for x in range(10)), Iterable)
+True
+>>> isinstance(100, Iterable)
+False
+注意：生成器都是Iterator对象，但list、dict、str虽然是Iterable，却不是Iterator，关于生成器，继续往下看
+
+2、生成器(generator)
+一个包含了yield关键字的函数就是一个生成器，该函数也叫生成器函数。当生成器函数被调用时，在函数体中的代码不会被执行，而会返回一个迭代器。每次请求一个值，就会执行生成器中代码，直到遇到一个yield表达式或return语句。yield表达式表示要生成一个值，return语句表示要停止生成器。换句话说，生成器是由两部分组成，生成器的函数和生成器的迭代器。生成器的函数是用def语句定义的，包含yield部分；生成器的迭代器是这个函数返回的部分。二者合起来叫做生成器。
+理解了迭代器以后，生成器就会简单很多，因为生成器其实是一种特殊的迭代器。不过这种迭代器更加优雅。它不需要再像上面的类一样写__iter__()和__next__()方法了，只需要一个yiled关键字。 生成器一定是迭代器（反之不成立），因此任何生成器也是以一种懒加载的模式生成值。
+
+语法上说，生成器函数是一个带yield关键字的函数。
+
+调用生成器函数后会得到一个生成器对象，这个生成器对象实际上就是一个特殊的迭代器，拥有__iter__()和__next__()方法
+
+>>> def generator():
+...   i = 1
+...   while i <= 3:
+...     yield i
+...     i += 1
+...
+>>> generator
+<function generator at 0x000000000323B9D8>
+>>> generator_iter = generator()
+>>> generator_iter
+<generator object generator at 0x0000000002D9CAF0>
+>>>
+>>> generator_iter.__next__()
+1
+>>> generator_iter.__next__()
+2
+>>> generator_iter.__next__()
+3
+>>> generator_iter.__next__()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+StopIteration
+>>>
